@@ -53,9 +53,9 @@ class GUI:
                 self.chat_transcript_area.insert('end', message + '\n')
                 self.chat_transcript_area.yview(END)
             elif "left the chat" in message:
-                user = message.split(":")[1]
-                message = user + " has left"
-                self.chat_transcript_area.insert('end', message + '\n')
+                print(message)
+
+                self.chat_transcript_area.insert('end', message.split(":")[0] + '\n')
                 self.chat_transcript_area.yview(END)
             else:
                 self.chat_transcript_area.insert('end', message + '\n')
@@ -88,9 +88,17 @@ class GUI:
         Label(frame, text='Enter message:', font=("Serif", 12)).pack(side='top', anchor='w')
         self.enter_text_widget = Text(frame, width=60, height=3, font=("Serif", 12))
         self.enter_text_widget.pack(side='left', pady=15)
-        self.enter_text_widget.bind('<Return>', self.on_enter_key_pressed)
+        self.enter_text_widget.bind('<Return>', lambda event: self.on_send_button_clicked())
+        self.send_button = Button(frame, text="Send", width=10, font="Helvetica 10 bold", bg="#ABB2B9",command=self.on_send_button_clicked).pack(side='left', padx=(10, 0))
+
         frame.pack(side='top')
 
+    def on_send_button_clicked(self):
+        if len(self.name_widget.get()) == 0:
+            messagebox.showerror("Enter your name", "Enter your name to send a message")
+            return
+        self.send_chat()
+        self.clear_text()
     def on_join(self):
         if len(self.name_widget.get()) == 0:
             messagebox.showerror(
