@@ -202,7 +202,7 @@ class GUI:
             exit(0)
 
 
-# the mail function
+# the main function
 if __name__ == '__main__':
     root = Tk()
     gui = GUI(root)
