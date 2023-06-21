@@ -1,7 +1,7 @@
 import socket
 import threading
 
-HOST_IP = '192.168.1.4'  # Server IP address
+HOST_IP = '127.0.0.1'  # Server 127.0.0.1IP address
 PORT = 5000  # Server port
 connected_clients = []  # Array to store connected clients
 

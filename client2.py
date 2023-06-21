@@ -26,7 +26,7 @@ class GUI:
     def init_socket(self):
         # initialize the socket
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_ip = '10.33.8.129'
+        server_ip = '127.0.0.1'
         server_port = 5000
         # connect to the server
         self.client_socket.connect((server_ip, server_port))
@@ -157,6 +157,7 @@ class GUI:
             return
         self.send_chat()
         self.clear_text()
+
     def on_join(self):
         if len(self.name_widget.get()) == 0:
             messagebox.showerror(
@@ -164,6 +165,7 @@ class GUI:
             return
         self.name_widget.config(state='disabled')
         self.client_socket.send(("joined:" + self.name_widget.get()).encode('utf-8'))
+
 
     def on_enter_key_pressed(self, event):
         if len(self.name_widget.get()) == 0:
