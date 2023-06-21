@@ -1,19 +1,17 @@
 from tkinter import Tk, Frame, Scrollbar, Label, END, Entry, Text, VERTICAL, Button, \
     messagebox,filedialog
-from PIL import Image, ImageTk
+from PIL import ImageTk, Image
 import requests
 import socket  # Sockets for network connection
 import threading  # for multiple process
-import base64
-import pickle
-from datetime import datetime
-import os
-import struct
+
+
 
 class GUI:
     client_socket = None
     last_received_message = None
 
+    # Create widgets to initialize GUI
     def __init__(self, master):
         self.root = master
         self.chat_transcript_area = None
@@ -21,34 +19,38 @@ class GUI:
         self.enter_text_widget = None
         self.join_button = None
         self.exit_button = None
-        self.initialize_socket()
-        self.initialize_gui()
+        self.init_socket()
+        self.init_gui()
         self.listen_for_incoming_messages_in_a_thread()
 
-    def initialize_socket(self):
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # initialazing socket with TCP and IPv4
-        remote_ip = '192.168.1.108'  # IP address
-        remote_port = 5000  # TCP port
-        self.client_socket.connect((remote_ip, remote_port))  # connect to the remote server
+    def init_socket(self):
+        # initialize the socket
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_ip = '10.33.8.129'
+        server_port = 5000
+        # connect to the server
+        self.client_socket.connect((server_ip, server_port))
 
-    def initialize_gui(self):  # GUI initializer
+
+    # intialize the GUI
+    def init_gui(self):  # GUI initializer
         self.root.title("COMPUTER NETWORKS SECRET CHAT")
         self.root.resizable(0, 0)
         self.display_chat_box()
-        self.display_emoji_buttons()
-        self.display_emoji_buttons1()
         self.display_name_section()
         self.display_chat_entry_box()
+        self.display_emoji_buttons()
+        self.display_emoji_buttons1()
 
+    # Create a thread to receive messages  continuously
     def listen_for_incoming_messages_in_a_thread(self):
-        thread = threading.Thread(target=self.receive_message_from_server,
-                                  args=(self.client_socket,))  # Create a thread for the send and receive in same time
+        # Create a thread for sending and receiving at the same time
+        thread = threading.Thread(target=self.receive_message,
+                                  args=(self.client_socket,))  
         thread.start()
 
-    # function to recieve msg
-
-
-    def receive_message_from_server(self, so):
+    # Funciton to receive messages
+    def receive_message(self, so):
         while True:
             buffer = so.recv(256)
             if not buffer:
@@ -71,33 +73,34 @@ class GUI:
 
         so.close()
 
+
     def display_emoji_buttons(self):
         frame = Frame()
-        
+
         emoji_buttons = [
             "😃", "😊", "👍", "👎","🧐", "👻","✋","👌","🦴"  # Add more emojis as needed
         ]
         emoji_x_pos = 490
-        
+
         for emoji in emoji_buttons:
             button = Button(frame,text=emoji, width=7, command=lambda emoji=emoji: self.on_emoji_button_clicked(emoji))
             button.pack(side='left', padx=(7, 0))
             emoji_x_pos += 30
-        
+
         frame.pack(side='bottom')
     def display_emoji_buttons1(self):
         frame = Frame()
-        
+
         emoji_buttons1 = [
              "🎉", "❤️", "😄", "😍","😶", "🙄","😡" ,"😑","☠️"# Add more emojis as needed
         ]
         emoji_x_pos = 490
-        
+
         for emoji in emoji_buttons1:
             button = Button(frame,text=emoji, width=7, command=lambda emoji=emoji: self.on_emoji_button_clicked(emoji))
             button.pack(side='left', padx=(7, 0))
             emoji_x_pos += 30
-        
+
         frame.pack(side='bottom')
 
     def on_emoji_button_clicked(self, emoji):
@@ -120,10 +123,10 @@ class GUI:
         response = requests.get(image_url, stream=True)
         image = Image.open(response.raw)
         image = image.resize((150, 150))  # Adjust the size of the image as per your needs
-        
+
         # Convert the image to Tkinter-compatible format
         photo = ImageTk.PhotoImage(image)
-        
+
         # Create a label to display the image
         image_label = Label(frame, image=photo)
         image_label.image = photo  # Store a reference to the image to prevent it from being garbage collected
@@ -140,7 +143,7 @@ class GUI:
     def display_chat_entry_box(self):
         frame = Frame()
         Label(frame, text='Enter message:', font=("Arial", 10)).pack(side='top', anchor='w')
-        
+
         self.enter_text_widget = Text(frame, width=60, height=3, font=("Serif", 12))
         self.enter_text_widget.pack(side='left', pady=15)
         self.enter_text_widget.bind('<Return>', lambda event: self.on_send_button_clicked())
@@ -176,9 +179,9 @@ class GUI:
     def send_chat(self):
         senders_name = self.name_widget.get().strip() + ": "
         data = self.enter_text_widget.get(1.0, 'end').strip()
-        
+
         emoji = " 👤 "
-        
+
         message = (emoji +(senders_name)+ "\n" + data).encode('utf-8')
         self.chat_transcript_area.insert('end', message.decode('utf-8') + '\n')
         self.chat_transcript_area.yview(END)
